@@ -111,7 +111,7 @@ headers_1 = ['Worker', 'Video Title', 'Watch / Actual Duration']
 headers_2 = ['Index', 'Video Title', 'Views']
 
 width = 0
-viewports = "864,864"
+viewports = "256,256"
 
 referers = ['https://search.yahoo.com/', 'https://duckduckgo.com/', 'https://www.google.com/',
             'https://www.bing.com/', 'https://t.co/', '']
