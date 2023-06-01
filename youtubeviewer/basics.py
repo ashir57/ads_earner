@@ -97,7 +97,7 @@ def get_driver(background, viewports, agent, auth_required, path, proxy, proxy_t
     options = webdriver.ChromeOptions()
     options.headless = background
     if viewports:
-        options.add_argument(f"--window-size={choice(viewports)}")
+        options.add_argument(f"--window-size={viewports}")
     options.add_argument("--log-level=3")
     options.add_experimental_option(
         "excludeSwitches", ["enable-automation", "enable-logging"])
@@ -118,14 +118,7 @@ def get_driver(background, viewports, agent, auth_required, path, proxy, proxy_t
     webdriver.DesiredCapabilities.CHROME['loggingPrefs'] = {
         'driver': 'OFF', 'server': 'OFF', 'browser': 'OFF'}
 
-    if not background:
-        options.add_extension(WEBRTC)
-        options.add_extension(FINGERPRINT)
-        options.add_extension(ACTIVE)
-
-        if CUSTOM_EXTENSIONS:
-            for extension in CUSTOM_EXTENSIONS:
-                options.add_extension(extension)
+    
 
     if auth_required:
         create_proxy_folder(proxy, proxy_folder)
@@ -224,35 +217,20 @@ def scroll_search(driver, video_title):
 def search_video(driver, keyword, video_title):
     try:
         type_keyword(driver, keyword)
-        raise Exception(
-                "done")
+        sleep(5)
+        msg = 'pass'
+        return msg
     except WebDriverException:
         try:
             bypass_popup(driver)
             type_keyword(driver, keyword, retry=True)
             sleep(5)
-            raise Exception(
-                "done")
+            msg = 'pass'
+            return msg
         except WebDriverException:
             sleep(7)
-            raise Exception(
-                "Slow internet speed or Stuck at recaptcha! Can't perform search keyword")
+            msg = 'failed'
+            return msg
+        
 
-    msg = scroll_search(driver, video_title)
-
-    if msg == 'failed':
-        bypass_popup(driver)
-
-        filters = driver.find_element(By.CSS_SELECTOR, '#filter-menu button')
-        driver.execute_script('arguments[0].scrollIntoViewIfNeeded()', filters)
-        sleep(randint(1, 3))
-        ensure_click(driver, filters)
-
-        sleep(randint(1, 3))
-        sort = WebDriverWait(driver, 30).until(EC.element_to_be_clickable(
-            (By.XPATH, '//div[@title="Sort by upload date"]')))
-        ensure_click(driver, sort)
-
-        msg = scroll_search(driver, video_title)
-
-    return msg
+    

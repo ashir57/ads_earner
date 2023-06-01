@@ -92,12 +92,17 @@ def scrape_api(link):
     proxies = []
 
     try:
-        response = requests.get(link)
+        proxy = "5.161.219.69:8080"
+        proxy_dict = {
+            "http": f"http://{proxy}",
+            "https": f"http://{proxy}",
+        }
+        response = requests.get(
+            link, proxies=proxy_dict, timeout=30 ,verify=False)
+        
         output = response.content.decode()
     except Exception as e:
         print(bcolors.FAIL + str(e) + bcolors.ENDC)
-        input('')
-        sys.exit()
 
     if '\r\n' in output:
         proxy = output.split('\r\n')

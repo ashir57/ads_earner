@@ -111,8 +111,7 @@ headers_1 = ['Worker', 'Video Title', 'Watch / Actual Duration']
 headers_2 = ['Index', 'Video Title', 'Views']
 
 width = 0
-viewports = ['2560,1440', '1920,1080', '1440,900',
-             '1536,864', '1366,768', '1280,1024', '1024,768']
+viewports = "864,864"
 
 referers = ['https://search.yahoo.com/', 'https://duckduckgo.com/', 'https://www.google.com/',
             'https://www.bing.com/', 'https://t.co/', '']
@@ -307,28 +306,6 @@ def youtube_normal(method, keyword, video_title, driver, output):
         if msg == 'failed':
             raise Exception(
                 f"Can't find this [{video_title}] video with this keyword [{keyword}]")
-
-    skip_initial_ad(driver, output, duration_dict)
-
-    try:
-        WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
-            (By.ID, 'movie_player')))
-    except WebDriverException:
-        raise Exception(
-            "Slow internet speed or Stuck at reCAPTCHA! Can't load YouTube...")
-
-    features(driver)
-
-    try:
-        view_stat = WebDriverWait(driver, 30).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '#count span'))).text
-        if not view_stat:
-            raise WebDriverException
-    except WebDriverException:
-        view_stat = driver.find_element(
-            By.XPATH, '//*[@id="info"]/span[1]').text
-
-    return view_stat
 
 
 def youtube_music(driver):
@@ -736,24 +713,7 @@ def main_viewer(proxy_type, proxy, position):
             if youtube == 'Video':
                 view_stat = youtube_normal(
                     method, keyword, video_title, driver, output)
-            else:
-                view_stat, output = youtube_music(driver)
-
-            if 'watching' in view_stat:
-                youtube_live(proxy, position, driver, output)
-
-            else:
-                current_url, current_channel = music_and_video(
-                    proxy, position, youtube, driver, output, view_stat)
-
-            channel_or_endscreen(proxy, position, youtube,
-                                 driver, view_stat, current_url, current_channel)
-
-            if randint(1, 2) == 1:
-                try:
-                    driver.find_element(By.ID, 'movie_player').send_keys('k')
-                except WebDriverException:
-                    pass
+            
 
             status = quit_driver(driver=driver, data_dir=data_dir)
 
